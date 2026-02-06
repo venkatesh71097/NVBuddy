@@ -2,8 +2,12 @@ from langchain_nvidia_ai_endpoints import ChatNVIDIA
 from langchain_core.prompts import ChatPromptTemplate
 from pydantic import BaseModel, Field
 from typing import Literal
-import os
-llm = ChatNVIDIA(model="meta/llama-3.1-70b-instruct", temperature=0, api_key='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')
+
+# Load env variables
+load_dotenv()
+key = os.getenv("NVIDIA_API_KEY")
+
+llm = ChatNVIDIA(model="meta/llama-3.1-70b-instruct", temperature=0, api_key=key)
 
 # --- 1. THE ROUTER (Traffic Control) ---
 class RouteQuery(BaseModel):
