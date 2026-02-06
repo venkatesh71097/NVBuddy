@@ -1,0 +1,12 @@
+langchain
+langgraph
+langchain-nvidia-ai-endpoints
+faiss-cpu
+nemoguardrails
+mcp
+fastmcp
+python-dotenv
+uvicorn
+fastapi
+beautifulsoup4
+pypdf
