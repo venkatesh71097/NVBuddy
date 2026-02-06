@@ -3,8 +3,8 @@ from langchain_core.prompts import ChatPromptTemplate
 from pydantic import BaseModel, Field
 from typing import Literal
 
-# Load env variables
-load_dotenv()
+import os
+from dotenv import load_dotenv
 key = os.getenv("NVIDIA_API_KEY")
 
 llm = ChatNVIDIA(model="meta/llama-3.1-70b-instruct", temperature=0, api_key=key)
