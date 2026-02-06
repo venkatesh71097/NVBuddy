@@ -2,7 +2,7 @@
 
 ![NVIDIA Solutions Architect](https://upload.wikimedia.org/wikipedia/commons/2/21/Nvidia_logo.svg)
 
-An AI-powered "Study Buddy" designed to help candidates prepare for NVIDIA Solutions Architect (SA) interviews. This tool leverages a **Dual-Brain Agent** architecture to simulate technical deep dives, system design discussions, and hardware sizing calculations. Took help from Gemini 3 Pro (GenAI) to develop a sizeable portion of the codebase. Idea was completely mine to just help me anticipate questions during interview if questions are asked based on NVIDIA Products. 
+An AI-powered "Study Buddy" designed to help candidates prepare for NVIDIA Solutions Architect (SA) interviews. This tool leverages a **Dual-Brain Agent** architecture to simulate technical deep dives, system design discussions, and hardware sizing calculations. Took help from Gemini 3 Pro (GenAI) to develop a sizeable portion of the codebase. Idea was completely mine to just help me anticipate questions during interview if questions are asked based on NVIDIA Products. I've always wanted to integrate sequential thinking MCP workflow in helping me think, and to approach a problem with a proper Chain of Thought. For eg., if I asked a question about H100 architecture, it poses me a question based on my resume like, "Seems like you worked on Deep Learning project in NUS for Finger movement classification. Can you compare the GPU architecture that you worked on versus H100"?" - I learnt that the GRID K520 that I used in that project has 130x lesser FLOPS as compared to H100. I also had built a calculator to help me compute the number of GPUs for a specific open-source model - an MCP tool. 
 
 ---
 
