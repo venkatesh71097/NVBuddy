@@ -2,7 +2,7 @@
 
 ![NVIDIA Solutions Architect](https://upload.wikimedia.org/wikipedia/commons/2/21/Nvidia_logo.svg)
 
-An AI-powered "Study Buddy" designed to help candidates prepare for NVIDIA Solutions Architect (SA) interviews. This tool leverages a **Dual-Brain Agent** architecture to simulate technical deep dives, system design discussions, and hardware sizing calculations. Took help from Gemini 3 Pro to develop a part of the codebase (specificially RAG). 
+An AI-powered "Study Buddy" designed to help candidates prepare for NVIDIA Solutions Architect (SA) interviews. This tool leverages a **Dual-Brain Agent** architecture to simulate technical deep dives, system design discussions, and hardware sizing calculations. Took help from Gemini 3 Pro (GenAI) to develop a sizeable portion of the codebase. Idea was completely mine to just help me anticipate questions during interview if questions are asked based on NVIDIA Products. 
 
 ---
 
