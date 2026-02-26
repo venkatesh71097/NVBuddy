@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Send, Cpu, Brain, GitPullRequest, Code2, Server } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Send, Cpu } from 'lucide-react';
 import { marked } from 'marked';
-import { sendMessage, checkStatus } from '../services/api';
-import type { ChatMessage as ApiChatMessage, SystemStatus } from '../services/api';
+import { sendMessage } from '../services/api';
+import type { ChatMessage as ApiChatMessage } from '../services/api';
 
 interface ChatBubble extends ApiChatMessage {
     id: string;

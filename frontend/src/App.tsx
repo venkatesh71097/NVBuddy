@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Brain, Database, FileText, CheckCircle, AlertTriangle, Key } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Database, FileText, Key } from 'lucide-react';
 import ChatPanel from './components/ChatPanel';
 import { checkStatus } from './services/api';
 import type { SystemStatus } from './services/api';
