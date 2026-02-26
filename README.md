@@ -29,7 +29,7 @@ The agent ingests your `resume.pdf` to provide personalized context. If you ask 
 
 Watch the Dual-Brain Agent handle a technical question about Triton Inference Server:
 
-<video src="demo.webm" width="800" controls autoPlay loop></video>
+https://github.com/venkatesh71097/NVBuddy/raw/main/demo.mp4
 
 ---
 
