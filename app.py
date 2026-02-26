@@ -17,14 +17,11 @@ st.set_page_config(
 # Custom CSS for NVIDIA feel
 st.markdown("""
 <style>
-    .stApp {
-        background-color: #0e1117;
-    }
     .stChatInputContainer {
-        border-color: #76b900;
+        border-color: #76b900 !important;
     }
     h1 {
-        color: #76b900;
+        color: #76b900 !important;
     }
 </style>
 """, unsafe_allow_html=True)

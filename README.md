@@ -1,8 +1,10 @@
-# 🤖 NVBuddy
+# 🤖 NVBuddy (v2.0 Redesign)
 
 ![NVIDIA Solutions Architect](https://upload.wikimedia.org/wikipedia/commons/2/21/Nvidia_logo.svg)
 
-An AI-powered "Study Buddy" designed to help candidates prepare for NVIDIA Solutions Architect (SA) interviews. This tool leverages a **Dual-Brain Agent** architecture to simulate technical deep dives, system design discussions, and hardware sizing calculations. Took help from Gemini 3 Pro (GenAI) to develop a sizeable portion of the codebase. Idea was completely mine to just help me anticipate questions during interview if questions are asked based on NVIDIA Products. I've always wanted to integrate sequential thinking MCP workflow in helping me think, and to approach a problem with a proper Chain of Thought. For eg., if I asked a question about H100 architecture, it poses me a question based on my resume like, "Seems like you worked on Deep Learning project in NUS for Finger movement classification. Can you compare the GPU architecture that you worked on versus H100"?" - I learnt that the GRID K520 that I used in that project has 130x lesser FLOPS as compared to H100. I also had built a calculator to help me compute the number of GPUs for a specific open-source model - an MCP tool. 
+An AI-powered "Study Buddy" designed to help candidates prepare for NVIDIA Solutions Architect (SA) interviews. This tool leverages a **Dual-Brain Agent** architecture to simulate technical deep dives, system design discussions, and hardware sizing calculations. 
+
+*Note: Originally built with Streamlit, this project was redesigned into a production-grade React+Vite web app with a FastAPI backend to support advanced UI cards and Vercel deployment.*
 
 ---
 
@@ -25,19 +27,25 @@ The agent ingests your `resume.pdf` to provide personalized context. If you ask 
 
 ## 🛠️ Technology Stack
 
-- **Orchestration**: [LangGraph](https://langchain-ai.github.io/langgraph/) (Stateful multi-actor orchestration)
+- **Frontend**: React, TypeScript, Vite, Lucide Icons (Premium NVIDIA Dark Theme)
+- **Backend API**: FastAPI (Python)
+- **Agent Orchestration**: [LangGraph](https://langchain-ai.github.io/langgraph/) (Stateful multi-actor orchestration)
 - **LLM**: Llama-3.1-70B via [NVIDIA AI Endpoints](https://build.nvidia.com/explore/discover)
-- **Frontend**: [Streamlit](https://streamlit.io/)
 - **Vector Store**: FAISS (for NVIDIA Docs and Resume RAG)
-- **Tools**: Custom MCP-style tools for Sequential Thinking and Math.
+- **Tools**: Custom MCP-style tools for Sequential Thinking and Math
 
 ---
 
 ## 📂 Project Structure
 
 ```bash
-├── app.py                  # Streamlit Frontend
-├── main.py                 # CLI Entry Point
+├── frontend/               # React + Vite Frontend
+│   ├── src/
+│   │   ├── App.tsx         # Main UI Layout
+│   │   ├── index.css       # NVIDIA Design System
+│   │   ├── components/     # UI Components (ChatPanel)
+│   │   └── services/api.ts # FastAPI Client
+├── server.py               # FastAPI Backend Entry Point
 ├── lab1_agent/             # Core Agent Logic
 │   ├── graph.py            # LangGraph Workflow Definition
 │   ├── chains.py           # LangChain Prompts & Router
@@ -49,133 +57,57 @@ The agent ingests your `resume.pdf` to provide personalized context. If you ask 
 
 ---
 
-## 🏗️ Technical Architecture
-
-### 1. The "Dual-Brain" Logic (LangGraph)
-The core of the agent is a **Stateful Graph** (`lab1_agent/graph.py`) that orchestrates the conversation flow. Unlike simple chatbots, this agent "thinks" before it speaks and routes questions to specialized sub-agents.
-
-**The Workflow:**
-1.  **Router**: Analyzes the user's intent.
-    -   *Technical Question?* -> **NVIDIA Tutor**
-    -   *Coding/Design?* -> **General Tutor**
-    -   *Math/Sizing?* -> **Hardware Calculator**
-    -   *Optimization?* -> **Deployment Expert**
-2.  **Sequential Thinking**: Before answering, the agent enters a `thinking_node` loop (simulated for this lab). It breaks down the user's query into steps:
-    -   Step 1: Analyze Intent
-    -   Step 2: Structure Lesson
-    -   Step 3: Review against Best Practices
-3.  **RAG & Context**:
-    -   **NVIDIA Tutor** retrieves docs from the vector store (`nvidia_faiss_index`) AND your resume (`resume_cv_index`).
-        -   It fuses this context to give personalized advice (e.g., "Since you've done X, you should look at Y").
-
-### 2. Component Deep Dive
-| Component | File | Description |
-| :--- | :--- | :--- |
-| **Graph Orchestrator** | `lab1_agent/graph.py` | Defines the `StateGraph`, nodes, and conditional edges. Manages the shared state (`GraphState`). |
-| **Router Chain** | `lab1_agent/chains.py` | Uses structured output (Pydantic) to classify queries into 4 categories. |
-| **MCP Tools** | `lab1_agent/mcp_server.py` | Implements the "Hands" of the agent: `_search_nvidia_docs`, `_calculate_gpu_memory`, etc. |
-| **RAG Ingestion** | `lab1_agent/ingest.py` | Handles the embedding of NVIDIA documentation and the user's PDF resume into FAISS indices. |
-
-### 3. Data Flow Diagram
-```mermaid
-graph TD
-    Start([User Input]) --> Router{Router}
-    
-    Router -->|General| Think[Thinking Loop]
-    Router -->|Technical| Retrieve[Retrieve Docs]
-    Router -->|Hardware| Calc[GPU Calculator]
-    Router -->|Deploy| Sim[Deployment Sim]
-    
-    Retrieve --> Think
-    
-    Think -->|Plan Ready| Decider{Context?}
-    
-    Decider -->|Yes| NVT[🟢 NVIDIA Tutor]
-    Decider -->|No| GT[🔵 General Tutor]
-    
-    Calc --> NVT
-    Sim --> NVT
-    
-    NVT --> End([Final Answer])
-    GT --> End
-```
-
-### 4. RAG & Knowledge Architecture
-The agent uses a **Hybrid RAG** approach to combine general NVIDIA knowledge with your specific resume context.
-
-**The Pipeline (`lab1_agent/ingest.py` & `ingest_resume.py`):**
-1.  **Sources**:
-    -   **Live Web**: `WebBaseLoader` scratches ~50+ NVIDIA blog posts and documentation pages.
-    -   **Resume**: `PyPDFLoader` ingests your `resume.pdf`.
-2.  **Splitting**:
-    -   Uses `RecursiveCharacterTextSplitter` (Chunk Size: 1000, Overlap: 100) to keep semantic context intact.
-3.  **Embeddings**:
-    -   Model: **`nvidia/nv-embedqa-e5-v5`** (State-of-the-art retrieval model).
-    -   This model is specifically optimized for technical Q&A.
-4.  **Vector Store**:
-    -   **FAISS** (Facebook AI Similarity Search) stores the dense vectors locally.
-    -   Two separate indices: `nvidia_faiss_index` (External Knowledge) and `resume_cv_index` (Personal Context).
-
-### 5. Model Context Protocol (MCP) & Tools
-We implement the "Hands" of the agent using a pattern inspired by **MCP (Model Context Protocol)**. This separates the *tools* from the *LLM*, allowing for a strictly typed tool interface (`lab1_agent/mcp_server.py`).
-
-| Function Name | Description | Inputs | Source File |
-| :--- | :--- | :--- | :--- |
-| `_search_nvidia_docs` | Semantic search over the FAISS index. | `query: str` | `mcp_server.py` |
-| `_calculate_gpu_memory` | Deterministic math for standard LLM sizing. | `params_billion: float`, `precision: str` | `mcp_server.py` |
-| `_sequential_thinking` | A meta-tool that forces the LLM to output its plan step-by-step. | `thought: str`, `step: int` | `mcp_server.py` |
-
----
-
-## 🚀 Getting Started
+## 🚀 Getting Started (Local Development)
 
 ### Prerequisites
-- Python 3.10+
+- Node.js (for frontend)
+- Python 3.10+ (for backend)
 - An NVIDIA AI Foundation Models API Key
 
-### Installation
+### 1. Backend Setup
 
-1. **Clone the repository**:
-   ```bash
-   git clone <repo-url>
-   cd "NVIDIA Solutions Architect Interview Prep"
-   ```
-
-2. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Set up Environment**:
-   Create a `.env` file in the root directory:
-   ```env
-   NVIDIA_API_KEY=nvapi-your-key-here
-   ```
-
-4. **Ingest Data (First Run Only)**:
-   Ensure your `resume.pdf` is in the root, then build the vector index:
-   ```bash
-   python lab1_agent/ingest.py
-   python lab1_agent/ingest_resume.py
-   ```
-
-### Running the Application
-
-**Web Interface (Recommended)**:
 ```bash
-streamlit run app.py
+# Clone the repository
+git clone <repo-url>
+cd "NVIDIA Solutions Architect Interview Prep"
+
+# Install Python dependencies
+pip install -r requirements.txt
+
+# Set your API key
+echo "NVIDIA_API_KEY=nvapi-your-key-here" > .env
+
+# Data Ingestion (First run only)
+# Make sure resume.pdf is in the root directory
+python lab1_agent/ingest.py
+python lab1_agent/ingest_resume.py
+
+# Start the FastAPI Server (Port 8000)
+uvicorn server:app --reload
 ```
 
-**CLI Mode**:
+### 2. Frontend Setup
+
+Open a new terminal window:
+
 ```bash
-python main.py
+cd frontend
+npm install
+
+# Start the Vite Dev Server (Port 8502)
+npm run dev -- --port 8502
 ```
+
+Navigate to `http://localhost:8502` to use the app.
 
 ---
 
-## 📸 Screenshots
+## 🌐 Deployment Architecture
 
-*(Add screenshots of the Streamlit UI here)*
+Since the frontend is a static React app and the backend relies on persistent memory (FAISS Vector Store), they must be deployed separately:
+
+1. **Frontend**: Deploy to **Vercel** or **Netlify**. Ensure the API URL in `api.ts` points to your backend production URL.
+2. **Backend**: Deploy to **Render** or **Heroku**. These platforms support persistent background memory, which is required to hold the FAISS vector index in RAM. Serverless functions (like Vercel API routes) will constantly drop the vector index and crash.
 
 ---
 
