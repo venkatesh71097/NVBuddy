@@ -3,6 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from lab1_agent.graph import app as agent_app
 
@@ -27,7 +31,6 @@ class ChatRequest(BaseModel):
 
 @app.get("/api/status")
 def get_status():
-    import os
     return {
         "status": "online",
         "api_key_set": bool(os.getenv("NVIDIA_API_KEY")),
