@@ -1,4 +1,4 @@
-# 🤖 NVBuddy (v2.0 Redesign)
+# 🤖 NVBuddy
 
 ![NVIDIA Solutions Architect](https://upload.wikimedia.org/wikipedia/commons/2/21/Nvidia_logo.svg)
 
